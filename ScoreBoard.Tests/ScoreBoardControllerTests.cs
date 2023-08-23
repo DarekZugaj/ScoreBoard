@@ -108,5 +108,112 @@ namespace ScoreBoard.Tests
 
             Assert.AreEqual(scoreBoard.Matches.Count, matchId);
         }
+
+        [TestMethod]
+        public void UpdateScore_MatchIdDoesNotExist_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 1, 0));
+        }
+
+        [TestMethod]
+        public void UpdateScore_HomeScoreInvalid_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, -1, 0));
+        }
+
+        [TestMethod]
+        public void UpdateScore_AwayScoreInvalid_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 0, -1));
+        }
+
+        [TestMethod]
+        public void UpdateScore_HomeScoreCantDiffByMoreThan1_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 3, 1));
+        }
+
+        [TestMethod]
+        public void UpdateScore_AwayScoreCantDiffByMoreThan1_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 1, 3));
+        }
+
+        [TestMethod]
+        public void UpdateScore_HomeScoreCantDecrease_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 0, 1));
+        }
+
+        [TestMethod]
+        public void UpdateScore_AwayScoreCantDecrease_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 1, 0));
+        }
+
+        [TestMethod]
+        public void UpdateScore_BothTeamsCantScoreAtTheSameTime_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.UpdateScore(1, 2, 2));
+        }
+
+        [TestMethod]
+        public void UpdateScore_HomeTeamScored_UpdatesScoreBoard()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            controller.UpdateScore(1, 2, 1);
+
+            Assert.AreEqual(2, scoreBoard.Matches.First(x => x.Id == 1).HomeTeamScore);
+        }
+
+        [TestMethod]
+        public void UpdateScore_AwayTeamScored_UpdatesScoreBoard()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            controller.UpdateScore(1, 1, 2);
+
+            Assert.AreEqual(2, scoreBoard.Matches.First(x => x.Id == 1).AwayTeamScore);
+        }
+
+        [TestMethod]
+        public void UpdateScore_NoChangeInScore_UpdatesScoreBoard()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1 && x.HomeTeamScore == 1 && x.AwayTeamScore == 1));
+
+            controller.UpdateScore(1, 1, 1);
+
+            Assert.AreEqual(1, scoreBoard.Matches.First(x => x.Id == 1).HomeTeamScore);
+            Assert.AreEqual(1, scoreBoard.Matches.First(x => x.Id == 1).AwayTeamScore);
+        }
+
+
     }
 }
