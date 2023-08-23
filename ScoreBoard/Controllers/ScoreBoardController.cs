@@ -51,7 +51,16 @@ namespace ScoreBoard.Controllers
 
         public void FinishMatch(int matchId)
         {
-            throw new NotImplementedException();
+            var match = scoreBoard.Matches.FirstOrDefault(x => x.Id == matchId);
+
+            if (match == null)
+            {
+                throw new ArgumentException("Provided match does not exist");
+            }
+            else
+            {
+                scoreBoard.Matches.Remove(match);
+            }
         }
     }
 }
