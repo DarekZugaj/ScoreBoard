@@ -9,6 +9,7 @@ namespace ScoreBoard.Controllers
     {
         private ScoreBoard scoreBoard = ScoreBoard.GetScoreBoard();
         private static readonly object locker = new object();
+
         public int StartMatch(ITeam homeTeam, ITeam awayTeam)
         {
             int matchId = 0;
@@ -24,6 +25,28 @@ namespace ScoreBoard.Controllers
             }
 
             return matchId;
+        }
+
+        public void UpdateScore(int matchId, int homeScore, int awayScore)
+        {
+            var match = scoreBoard.Matches.FirstOrDefault(x => x.Id == matchId);
+
+            if (match == null)
+            {
+                throw new ArgumentException("Provided match does not exist");
+            }
+            else
+            {
+                if (homeScore < match.HomeTeamScore || homeScore > match.HomeTeamScore + 1)
+                    throw new ArgumentException("Provided home team score is incorrect");
+                if (awayScore < match.AwayTeamScore || awayScore > match.AwayTeamScore + 1)
+                    throw new ArgumentException("Provided away team score is incorrect");
+                if (match.HomeTeamScore != homeScore && match.AwayTeamScore != awayScore)
+                    throw new ArgumentException("Both teams can't score at the same time");
+
+                match.HomeTeamScore = homeScore;
+                match.AwayTeamScore = awayScore;    
+            }
         }
     }
 }
