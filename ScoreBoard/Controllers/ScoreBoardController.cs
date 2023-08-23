@@ -48,5 +48,10 @@ namespace ScoreBoard.Controllers
                 match.AwayTeamScore = awayScore;    
             }
         }
+
+        public void FinishMatch(int matchId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

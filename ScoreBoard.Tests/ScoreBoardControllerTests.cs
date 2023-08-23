@@ -214,6 +214,25 @@ namespace ScoreBoard.Tests
             Assert.AreEqual(1, scoreBoard.Matches.First(x => x.Id == 1).AwayTeamScore);
         }
 
+        [TestMethod]
+        public void FinishMatch_MatchIdDoesNotExist_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+
+            Assert.ThrowsException<ArgumentException>(() => controller.FinishMatch(1));
+        }
+
+        [TestMethod]
+        public void FinishMatch_ValidMatchId_RemovesMatchFromBoard()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1));
+
+            controller.FinishMatch(1);
+
+            Assert.AreEqual(0, scoreBoard.Matches.Count);
+        }
+
 
     }
 }
