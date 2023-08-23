@@ -6,7 +6,7 @@ using ScoreBoard.Controllers;
 namespace ScoreBoard.Tests
 {
     [TestClass]
-    public class IScoreBoardControllerTests
+    public class ScoreBoardControllerTests
     {
         private IScoreBoardController controller;
         private Mock<ITeam> homeTeam;
@@ -48,6 +48,28 @@ namespace ScoreBoard.Tests
             awayTeam.SetupGet(x => x.Name).Returns(string.Empty);
 
             Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, awayTeam.Object));
+        }
+
+        [TestMethod]
+        public void StartMatch_HomeTeamNull_ThrowsArgumentException()
+        {
+            awayTeam.SetupGet(x => x.Name).Returns("Poland");
+
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null, awayTeam.Object));
+        }
+
+        [TestMethod]
+        public void StartMatch_AwayTeamNull_ThrowsArgumentException()
+        {
+            homeTeam.SetupGet(x => x.Name).Returns("Poland");
+
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, null));
+        }
+
+        [TestMethod]
+        public void StartMatch_BothTeamsNulls_ThrowsArgumentException()
+        {
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null,null));
         }
 
         [TestMethod]
