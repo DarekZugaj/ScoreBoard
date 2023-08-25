@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using ScoreBoard.Entities;
 using Match = ScoreBoard.Entities.Match;
+using System.Text;
 
 namespace ScoreBoard.Controllers
 {
@@ -61,6 +62,11 @@ namespace ScoreBoard.Controllers
             {
                 scoreBoard.Matches.Remove(match);
             }
+        }
+
+        public string GetSummary()
+        {
+            throw new NotImplementedException();
         }
     }
 }

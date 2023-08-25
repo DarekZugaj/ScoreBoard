@@ -7,5 +7,7 @@
         void UpdateScore(int matchId, int homeScore, int awayScore);
 
         void FinishMatch(int matchId);
+
+        string GetSummary();
     }
 }

@@ -2,6 +2,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ScoreBoard.Interfaces;
 using ScoreBoard.Controllers;
+using ScoreBoard.Entities;
+using Match = ScoreBoard.Entities.Match;
 
 namespace ScoreBoard.Tests
 {
@@ -9,61 +11,75 @@ namespace ScoreBoard.Tests
     public class ScoreBoardControllerTests
     {
         private IScoreBoardController controller;
-        private Mock<ITeam> homeTeam;
-        private Mock<ITeam> awayTeam;
+        private Mock<ITeam> homeTeam1;
+        private Mock<ITeam> homeTeam2;
+        private Mock<ITeam> homeTeam3;
+        private Mock<ITeam> awayTeam1;
+        private Mock<ITeam> awayTeam2;
+        private Mock<ITeam> awayTeam3;
         private ScoreBoard scoreBoard;
 
         [TestInitialize]
         public void Setup()
         {
             controller = new ScoreBoardController();
-            homeTeam = new Mock<ITeam>();
-            awayTeam = new Mock<ITeam>();
-            scoreBoard = ScoreBoard.GetScoreBoard();
+
+            homeTeam1 = new Mock<ITeam>();
+            homeTeam1.SetupGet(x => x.Name).Returns("Argentina");
+
+            homeTeam2 = new Mock<ITeam>();
+            homeTeam2.SetupGet(x => x.Name).Returns("Belgium");
+
+            homeTeam3 = new Mock<ITeam>();
+            homeTeam3.SetupGet(x => x.Name).Returns("Chile");
+
+            awayTeam1 = new Mock<ITeam>();
+            awayTeam1.SetupGet(x => x.Name).Returns("Australia");
+
+            awayTeam2 = new Mock<ITeam>();
+            awayTeam2.SetupGet(x => x.Name).Returns("Brazil");
             
+            awayTeam3 = new Mock<ITeam>();
+            awayTeam3.SetupGet(x => x.Name).Returns("China");
+            
+            scoreBoard = ScoreBoard.GetScoreBoard();  
         }
 
         [TestMethod]
         public void StartMatch_HomeTeamEmpty_ThrowsArgumentException()
         {
-            homeTeam.SetupGet(x => x.Name).Returns(string.Empty);
-            awayTeam.SetupGet(x => x.Name).Returns("Poland");
+            homeTeam1.SetupGet(x => x.Name).Returns(string.Empty);
 
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, awayTeam.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
         }
 
         [TestMethod]
         public void StartMatch_AwayTeamEmpty_ThrowsArgumentException()
         {
-            homeTeam.SetupGet(x => x.Name).Returns("Poland");
-            awayTeam.SetupGet(x => x.Name).Returns(string.Empty);
+            awayTeam1.SetupGet(x => x.Name).Returns(string.Empty);
 
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, awayTeam.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
         }
 
         [TestMethod]
         public void StartMatch_BothTeamsEmpty_ThrowsArgumentException()
         {
-            homeTeam.SetupGet(x => x.Name).Returns(string.Empty);
-            awayTeam.SetupGet(x => x.Name).Returns(string.Empty);
+            homeTeam1.SetupGet(x => x.Name).Returns(string.Empty);
+            awayTeam1.SetupGet(x => x.Name).Returns(string.Empty);
 
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, awayTeam.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
         }
 
         [TestMethod]
         public void StartMatch_HomeTeamNull_ThrowsArgumentException()
         {
-            awayTeam.SetupGet(x => x.Name).Returns("Poland");
-
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null, awayTeam.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null, awayTeam1.Object));
         }
 
         [TestMethod]
         public void StartMatch_AwayTeamNull_ThrowsArgumentException()
         {
-            homeTeam.SetupGet(x => x.Name).Returns("Poland");
-
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam.Object, null));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, null));
         }
 
         [TestMethod]
@@ -76,10 +92,8 @@ namespace ScoreBoard.Tests
         public void StartMatch_ValidTeams_AddsMatchToScoreBoard()
         {
             scoreBoard.Matches.Clear();
-            homeTeam.SetupGet(x => x.Name).Returns("Poland");
-            awayTeam.SetupGet(x => x.Name).Returns("Brazil");
 
-            controller.StartMatch(homeTeam.Object, awayTeam.Object);
+            controller.StartMatch(homeTeam1.Object, awayTeam1.Object);
 
             Assert.AreEqual(1, scoreBoard.Matches.Count);
         }
@@ -88,10 +102,8 @@ namespace ScoreBoard.Tests
         public void StartMatch_ValidTeams_AddsMatchWithValidScore()
         {
             scoreBoard.Matches.Clear();
-            homeTeam.SetupGet(x => x.Name).Returns("Poland");
-            awayTeam.SetupGet(x => x.Name).Returns("Brazil");
 
-            controller.StartMatch(homeTeam.Object, awayTeam.Object);
+            controller.StartMatch(homeTeam1.Object, awayTeam1.Object);
 
             Assert.AreEqual(0, scoreBoard.Matches[0].HomeTeamScore);
             Assert.AreEqual(0, scoreBoard.Matches[0].AwayTeamScore);
@@ -101,10 +113,8 @@ namespace ScoreBoard.Tests
         public void StartMatch_ValidTeams_ReturnsValidMatchId()
         {
             scoreBoard.Matches.Clear();
-            homeTeam.SetupGet(x => x.Name).Returns("Poland");
-            awayTeam.SetupGet(x => x.Name).Returns("Brazil");
 
-            var matchId = controller.StartMatch(homeTeam.Object, awayTeam.Object);
+            var matchId = controller.StartMatch(homeTeam1.Object, awayTeam1.Object);
 
             Assert.AreEqual(scoreBoard.Matches.Count, matchId);
         }
@@ -231,6 +241,65 @@ namespace ScoreBoard.Tests
             controller.FinishMatch(1);
 
             Assert.AreEqual(0, scoreBoard.Matches.Count);
+        }
+
+        [TestMethod]
+        public void GetSummary_EmptyBoard_ReturnsEmptyString()
+        {
+            scoreBoard.Matches.Clear();
+
+            Assert.AreEqual(string.Empty, controller.GetSummary());
+        }
+
+        [TestMethod]
+        public void GetSummary_DifferentTotalScores_ReturnsValidOrder()
+        {
+            scoreBoard.Matches.Clear();
+
+            scoreBoard.Matches.Add(new Match(1, homeTeam1.Object, 1, awayTeam1.Object, 1));
+            scoreBoard.Matches.Add(new Match(2, homeTeam2.Object, 2, awayTeam2.Object, 2));
+            scoreBoard.Matches.Add(new Match(3, homeTeam3.Object, 3, awayTeam3.Object, 3));
+
+            var output = controller.GetSummary();
+            var expectedOutput = $"1. {homeTeam3.Object.Name} 3 - {awayTeam3.Object.Name} 3{Environment.NewLine}" +
+                                 $"2. {homeTeam2.Object.Name} 2 - {awayTeam2.Object.Name} 2{Environment.NewLine}" +
+                                 $"3. {homeTeam1.Object.Name} 1 - {awayTeam1.Object.Name} 1{Environment.NewLine}";
+
+            Assert.AreEqual(expectedOutput, output);
+        }
+
+        [TestMethod]
+        public void GetSummary_SameTotalScoresOnly_ReturnsValidOrder()
+        {
+            scoreBoard.Matches.Clear();
+
+            scoreBoard.Matches.Add(new Match(1, homeTeam1.Object, 1, awayTeam1.Object, 1));
+            scoreBoard.Matches.Add(new Match(2, homeTeam2.Object, 1, awayTeam2.Object, 1));
+            scoreBoard.Matches.Add(new Match(3, homeTeam3.Object, 1, awayTeam3.Object, 1));
+
+            var output = controller.GetSummary();
+            var expectedOutput = $"1. {homeTeam3.Object.Name} 1 - {awayTeam3.Object.Name} 1{Environment.NewLine}" +
+                                 $"2. {homeTeam2.Object.Name} 1 - {awayTeam2.Object.Name} 1{Environment.NewLine}" +
+                                 $"3. {homeTeam1.Object.Name} 1 - {awayTeam1.Object.Name} 1{Environment.NewLine}";
+
+            Assert.AreEqual(expectedOutput, output);
+        }
+
+        [TestMethod]
+        public void GetSummary_SameAndDifferentTotalScores_ReturnsValidOrder()
+        {
+            scoreBoard.Matches.Clear();
+
+            scoreBoard.Matches.Add(new Match(1, homeTeam1.Object, 1, awayTeam1.Object, 1));
+            scoreBoard.Matches.Add(new Match(2, homeTeam2.Object, 0, awayTeam2.Object, 3));
+            scoreBoard.Matches.Add(new Match(3, homeTeam3.Object, 1, awayTeam3.Object, 1));
+
+            var output = controller.GetSummary();
+            var expectedOutput = $"1. {homeTeam2.Object.Name} 0 - {awayTeam2.Object.Name} 3{Environment.NewLine}" +
+                                 $"2. {homeTeam3.Object.Name} 1 - {awayTeam3.Object.Name} 1{Environment.NewLine}" +
+                                 $"3. {homeTeam1.Object.Name} 1 - {awayTeam1.Object.Name} 1{Environment.NewLine}";
+
+            Assert.AreEqual(expectedOutput, output);
         }
 
 
