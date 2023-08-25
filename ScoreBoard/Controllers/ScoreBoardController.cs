@@ -12,9 +12,9 @@ namespace ScoreBoard.Controllers
         public int StartMatch(ITeam homeTeam, ITeam awayTeam)
         {
             int matchId = 0;
-            if (homeTeam == null || string.IsNullOrEmpty(homeTeam.Name))
+            if (homeTeam == null || string.IsNullOrEmpty(homeTeam.Name) || scoreBoard.Matches.Any(x => x.HomeTeam.Equals(homeTeam) || x.AwayTeam.Equals(homeTeam)))
                 throw new ArgumentException("Home team is incorrect");
-            if (awayTeam == null || string.IsNullOrEmpty(awayTeam.Name))
+            if (awayTeam == null || string.IsNullOrEmpty(awayTeam.Name) || scoreBoard.Matches.Any(x => x.HomeTeam.Equals(awayTeam) || x.AwayTeam.Equals(awayTeam)))
                 throw new ArgumentException("Away team name is incorrect");
 
             lock (locker)
@@ -36,9 +36,9 @@ namespace ScoreBoard.Controllers
             }
             else
             {
-                if (homeScore < match.HomeTeamScore || homeScore > match.HomeTeamScore + 1)
+                if (homeScore < match.HomeTeamScore || homeScore > match.HomeTeamScore + 1) //score can't decrease and increase by more than 1
                     throw new ArgumentException("Provided home team score is incorrect");
-                if (awayScore < match.AwayTeamScore || awayScore > match.AwayTeamScore + 1)
+                if (awayScore < match.AwayTeamScore || awayScore > match.AwayTeamScore + 1)//score can't decrease and increase by more than 1
                     throw new ArgumentException("Provided away team score is incorrect");
                 if (match.HomeTeamScore != homeScore && match.AwayTeamScore != awayScore)
                     throw new ArgumentException("Both teams can't score at the same time");

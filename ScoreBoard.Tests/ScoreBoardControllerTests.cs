@@ -119,6 +119,24 @@ namespace ScoreBoard.Tests
         }
 
         [TestMethod]
+        public void StartMatch_HomeTeamAlreadyPlaying_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.HomeTeam == homeTeam1.Object && x.AwayTeam == awayTeam1.Object));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
+        }
+
+        [TestMethod]
+        public void StartMatch_AwayTeamAlreadyPlaying_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.HomeTeam == homeTeam1.Object && x.AwayTeam == awayTeam1.Object));
+
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
+        }
+
+        [TestMethod]
         public void UpdateScore_MatchIdDoesNotExist_ThrowsArgumentException()
         {
             scoreBoard.Matches.Clear();
