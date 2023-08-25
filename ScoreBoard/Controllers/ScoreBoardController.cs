@@ -66,7 +66,15 @@ namespace ScoreBoard.Controllers
 
         public string GetSummary()
         {
-            throw new NotImplementedException();
+            var summaryBuilder = new StringBuilder();
+            var orderedBoard = scoreBoard.Matches.OrderByDescending(x => x.HomeTeamScore + x.AwayTeamScore).ThenByDescending(x => x.Id);
+              
+            for(int i = 0; i < orderedBoard.Count(); i++)
+            {
+                summaryBuilder.AppendLine($"{i+1}. {orderedBoard.ElementAt(i).ToString()}");
+            }
+
+            return summaryBuilder.ToString();
         }
     }
 }

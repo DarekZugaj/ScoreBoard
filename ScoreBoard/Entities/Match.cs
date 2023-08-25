@@ -22,6 +22,11 @@ namespace ScoreBoard.Entities
             HomeTeamScore = homeTeamScore;
             AwayTeam = awayTeam;
             AwayTeamScore = awayTeamScore;
-        }   
+        }
+
+        public override string ToString()
+        {
+            return $"{HomeTeam.Name} {HomeTeamScore} - {AwayTeam.Name} {AwayTeamScore}";
+        }
     }
 }
