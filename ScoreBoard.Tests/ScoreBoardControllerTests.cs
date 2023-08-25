@@ -124,7 +124,7 @@ namespace ScoreBoard.Tests
             scoreBoard.Matches.Clear();
             scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.HomeTeam == homeTeam1.Object && x.AwayTeam == awayTeam1.Object));
 
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam2.Object));
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace ScoreBoard.Tests
             scoreBoard.Matches.Clear();
             scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.HomeTeam == homeTeam1.Object && x.AwayTeam == awayTeam1.Object));
 
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, awayTeam1.Object));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam2.Object, awayTeam1.Object));
         }
 
         [TestMethod]
