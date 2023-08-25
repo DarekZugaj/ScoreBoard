@@ -1,6 +1,4 @@
 ﻿using ScoreBoard.Interfaces;
-using System.Text.RegularExpressions;
-using ScoreBoard.Entities;
 using Match = ScoreBoard.Entities.Match;
 using System.Text;
 
@@ -9,7 +7,7 @@ namespace ScoreBoard.Controllers
     public class ScoreBoardController : IScoreBoardController
     {
         private ScoreBoard scoreBoard = ScoreBoard.GetScoreBoard();
-        private static readonly object locker = new object();
+        private static readonly object locker = new();
 
         public int StartMatch(ITeam homeTeam, ITeam awayTeam)
         {

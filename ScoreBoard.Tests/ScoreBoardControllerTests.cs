@@ -2,7 +2,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ScoreBoard.Interfaces;
 using ScoreBoard.Controllers;
-using ScoreBoard.Entities;
 using Match = ScoreBoard.Entities.Match;
 
 namespace ScoreBoard.Tests
@@ -38,11 +37,11 @@ namespace ScoreBoard.Tests
 
             awayTeam2 = new Mock<ITeam>();
             awayTeam2.SetupGet(x => x.Name).Returns("Brazil");
-            
+
             awayTeam3 = new Mock<ITeam>();
             awayTeam3.SetupGet(x => x.Name).Returns("China");
-            
-            scoreBoard = ScoreBoard.GetScoreBoard();  
+
+            scoreBoard = ScoreBoard.GetScoreBoard();
         }
 
         [TestMethod]
@@ -85,7 +84,7 @@ namespace ScoreBoard.Tests
         [TestMethod]
         public void StartMatch_BothTeamsNulls_ThrowsArgumentException()
         {
-            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null,null));
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(null, null));
         }
 
         [TestMethod]
@@ -233,7 +232,7 @@ namespace ScoreBoard.Tests
         }
 
         [TestMethod]
-        public void FinishMatch_ValidMatchId_RemovesMatchFromBoard()
+        public void FinishMatch_ValidMatchIdOnlyOneMatchOnBoard_RemovesMatchFromBoard()
         {
             scoreBoard.Matches.Clear();
             scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1));
@@ -241,6 +240,19 @@ namespace ScoreBoard.Tests
             controller.FinishMatch(1);
 
             Assert.AreEqual(0, scoreBoard.Matches.Count);
+        }
+
+        [TestMethod]
+        public void FinishMatch_ValidMatchIdMultipleMatchesOnBoard_RemovesMatchFromBoard()
+        {
+            scoreBoard.Matches.Clear();
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 1));
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 2));
+            scoreBoard.Matches.Add(Mock.Of<IMatch>(x => x.Id == 3));
+
+            controller.FinishMatch(2);
+
+            Assert.AreEqual(2, scoreBoard.Matches.Count);
         }
 
         [TestMethod]
@@ -300,6 +312,12 @@ namespace ScoreBoard.Tests
                                  $"3. {homeTeam1.Object.Name} 1 - {awayTeam1.Object.Name} 1{Environment.NewLine}";
 
             Assert.AreEqual(expectedOutput, output);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            scoreBoard.Matches.Clear();
         }
 
 

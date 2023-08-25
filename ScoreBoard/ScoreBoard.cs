@@ -5,7 +5,7 @@ namespace ScoreBoard
     public class ScoreBoard
     {
         private static ScoreBoard instance;
-        private static readonly object locker = new object();
+        private static readonly object locker = new();
         public List<IMatch> Matches { get; set; } = new List<IMatch>();
         
         public static ScoreBoard GetScoreBoard()
