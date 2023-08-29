@@ -16,6 +16,8 @@ namespace ScoreBoard.Controllers
                 throw new ArgumentException("Home team is incorrect");
             if (awayTeam == null || string.IsNullOrEmpty(awayTeam.Name) || scoreBoard.Matches.Any(x => x.HomeTeam.Equals(awayTeam) || x.AwayTeam.Equals(awayTeam)))
                 throw new ArgumentException("Away team name is incorrect");
+            if (homeTeam.Equals(awayTeam))
+                throw new ArgumentException("Team can't play against itself");
 
             lock (locker)
             {
