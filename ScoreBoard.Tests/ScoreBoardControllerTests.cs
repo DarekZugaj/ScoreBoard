@@ -137,6 +137,14 @@ namespace ScoreBoard.Tests
         }
 
         [TestMethod]
+        public void StartMatch_HomeAndAwayTeamsAreSame_ThrowsArgumentException()
+        {
+            scoreBoard.Matches.Clear();
+
+            Assert.ThrowsException<ArgumentException>(() => controller.StartMatch(homeTeam1.Object, homeTeam1.Object));
+        }
+
+        [TestMethod]
         public void UpdateScore_MatchIdDoesNotExist_ThrowsArgumentException()
         {
             scoreBoard.Matches.Clear();
