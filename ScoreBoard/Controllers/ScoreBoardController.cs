@@ -6,18 +6,19 @@ namespace ScoreBoard.Controllers
 {
     public class ScoreBoardController : IScoreBoardController
     {
-        private ScoreBoard scoreBoard = ScoreBoard.GetScoreBoard();
+        private readonly ScoreBoard scoreBoard = ScoreBoard.GetScoreBoard();
+        private readonly IValidator validator;
         private static readonly object locker = new();
+
+        public ScoreBoardController(IValidator validatorObject)
+        {
+            validator = validatorObject;
+        }
 
         public int StartMatch(ITeam homeTeam, ITeam awayTeam)
         {
+            validator.ValidateStartMatch(homeTeam, awayTeam, scoreBoard.Matches);
             int matchId = 0;
-            if (homeTeam == null || string.IsNullOrEmpty(homeTeam.Name) || scoreBoard.Matches.Any(x => x.HomeTeam.Equals(homeTeam) || x.AwayTeam.Equals(homeTeam)))
-                throw new ArgumentException("Home team is incorrect");
-            if (awayTeam == null || string.IsNullOrEmpty(awayTeam.Name) || scoreBoard.Matches.Any(x => x.HomeTeam.Equals(awayTeam) || x.AwayTeam.Equals(awayTeam)))
-                throw new ArgumentException("Away team name is incorrect");
-            if (homeTeam.Equals(awayTeam))
-                throw new ArgumentException("Team can't play against itself");
 
             lock (locker)
             {
@@ -31,37 +32,18 @@ namespace ScoreBoard.Controllers
         public void UpdateScore(int matchId, int homeScore, int awayScore)
         {
             var match = scoreBoard.Matches.FirstOrDefault(x => x.Id == matchId);
+            validator.ValidateUpdateScore(match, homeScore, awayScore);
 
-            if (match == null)
-            {
-                throw new ArgumentException("Provided match does not exist");
-            }
-            else
-            {
-                if (homeScore < match.HomeTeamScore || homeScore > match.HomeTeamScore + 1) //score can't decrease and increase by more than 1
-                    throw new ArgumentException("Provided home team score is incorrect");
-                if (awayScore < match.AwayTeamScore || awayScore > match.AwayTeamScore + 1)//score can't decrease and increase by more than 1
-                    throw new ArgumentException("Provided away team score is incorrect");
-                if (match.HomeTeamScore != homeScore && match.AwayTeamScore != awayScore)
-                    throw new ArgumentException("Both teams can't score at the same time");
-
-                match.HomeTeamScore = homeScore;
-                match.AwayTeamScore = awayScore;    
-            }
+            match.HomeTeamScore = homeScore;
+            match.AwayTeamScore = awayScore;
         }
 
         public void FinishMatch(int matchId)
         {
             var match = scoreBoard.Matches.FirstOrDefault(x => x.Id == matchId);
+            validator.ValidateFinishMatch(match);
 
-            if (match == null)
-            {
-                throw new ArgumentException("Provided match does not exist");
-            }
-            else
-            {
-                scoreBoard.Matches.Remove(match);
-            }
+            scoreBoard.Matches.Remove(match);
         }
 
         public string GetSummary()

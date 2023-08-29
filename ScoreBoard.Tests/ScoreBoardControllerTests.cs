@@ -3,12 +3,14 @@ using Moq;
 using ScoreBoard.Interfaces;
 using ScoreBoard.Controllers;
 using Match = ScoreBoard.Entities.Match;
+using ScoreBoard.Validators;
 
 namespace ScoreBoard.Tests
 {
     [TestClass]
     public class ScoreBoardControllerTests
     {
+        private IValidator validator;
         private IScoreBoardController controller;
         private Mock<ITeam> homeTeam1;
         private Mock<ITeam> homeTeam2;
@@ -21,7 +23,8 @@ namespace ScoreBoard.Tests
         [TestInitialize]
         public void Setup()
         {
-            controller = new ScoreBoardController();
+            validator = new Validator();
+            controller = new ScoreBoardController(validator);
 
             homeTeam1 = new Mock<ITeam>();
             homeTeam1.SetupGet(x => x.Name).Returns("Argentina");

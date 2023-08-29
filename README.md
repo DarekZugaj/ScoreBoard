@@ -6,4 +6,3 @@
 
 #Potential improvements:
 1. Customize exception handling e.g. separate exception type
-2. Separate validation logic from controller 
